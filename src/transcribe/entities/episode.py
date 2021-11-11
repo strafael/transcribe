@@ -20,9 +20,17 @@ class Episode:
     def get_segment_transcript(self, start_time, end_time) -> str:
         start = timedelta(seconds=start_time)
         end = timedelta(seconds=end_time)
+        matches = []
         for t in self.transcripts:
-            if start <= t.timestamp < end:
-                return t.transcript
+            if t.timestamp < start:
+                continue
+
+            if t.timestamp >= end:
+                break
+
+            matches.append(t.transcript)
+
+        return " ".join(matches)
 
     @classmethod
     def from_transcript_text(cls, episode_id: str, text: str) -> Episode:

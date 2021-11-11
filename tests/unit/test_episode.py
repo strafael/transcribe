@@ -16,6 +16,7 @@ def test_init_episode_from_transcript_text():
     "start_time,end_time,expected",
     [
         (21, 24, "Everybody really just about literally everybody was growing Red Delicious."),
+        (21, 30, "Everybody really just about literally everybody was growing Red Delicious. This is Dennis courtier. He's the owner of Pepin heights orchard in Lake City, Minnesota."),
     ]
 )
 def test_get_segment_transcript(start_time, end_time, expected):
