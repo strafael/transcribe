@@ -10,6 +10,6 @@ class Transcript:
 
     @classmethod
     def from_dict(cls, data) -> Transcript:
-        hours, minutes = data["timestamp"].split(":")
-        delta = timedelta(hours=int(hours), minutes=int(minutes))
+        minutes, seconds = data["timestamp"].split(":")
+        delta = timedelta(minutes=int(minutes), seconds=int(seconds))
         return cls(delta, data["transcript"])
