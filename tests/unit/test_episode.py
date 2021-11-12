@@ -32,6 +32,9 @@ def test_get_segment_transcript(start_time, end_time, expected):
     "start_time,end_time,expected",
     [
         (480, 482, "when the honeycrisp finally get to"),
+        (13, 15, "be mushy and mealy, just nasty."),
+        (817, 830, "And I'm Dan Charles. Thanks for listening."),
+        (816, 820, "people. You can find it on the NPR one. I'm Jacob Goldstein. And I'm Dan Charles. Thanks for listening."),
     ]
 )
 def test_get_broken_segment_transcript(start_time, end_time, expected):
