@@ -6,10 +6,10 @@ from datetime import timedelta
 @dataclass(frozen=True)
 class Transcript:
     timestamp: timedelta
-    transcript: str
+    text: str
 
     @classmethod
     def from_dict(cls, data) -> Transcript:
         minutes, seconds = data["timestamp"].split(":")
         delta = timedelta(minutes=int(minutes), seconds=int(seconds))
-        return cls(delta, data["transcript"])
+        return cls(delta, data["text"])
