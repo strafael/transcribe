@@ -10,4 +10,4 @@ RUN venv/bin/pip install -e .[dev]
 COPY src/ /src
 COPY tests/ /tests
 
-ENTRYPOINT ["venv/bin/pytest", "tests/"]
+ENTRYPOINT ["venv/bin/pytest", "--cov=transcribe", "tests/"]
