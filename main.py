@@ -1,6 +1,11 @@
+from transcribe.providers.episode_fake import EpisodeFakeRepository
+from transcribe.usecases import RetrieveSegmentTranscript
+
+
 def retrieve_segment_transcript(episode_id, start_time, end_time):
-    # TODO: implement me
-    pass
+    repo = EpisodeFakeRepository()
+    usecase = RetrieveSegmentTranscript(repo)
+    return usecase.execute(episode_id, start_time, end_time)
 
 
 def test_case_1():

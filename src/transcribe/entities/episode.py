@@ -36,7 +36,6 @@ class Episode:
         transcripts_in_range = [t for t in self.transcripts if t.is_within(start, end)]
         matches = []
         for transcript in transcripts_in_range:
-            print(f"{transcript.start}, {transcript.end}")
             matches.append(transcript.get_segment(start, end))
 
         return " ".join(matches)

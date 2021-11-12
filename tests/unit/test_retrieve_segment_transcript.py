@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from transcribe.providers.episode_fake import EpisodeFakeRepository
