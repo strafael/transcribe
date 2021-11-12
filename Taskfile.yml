@@ -1,0 +1,52 @@
+# https://taskfile.org
+version: '3'
+
+tasks:
+  run-tests:
+    desc: Run tests
+    deps: [build-tests]
+    cmds:
+      - |
+          docker run \
+            --rm \
+            --mount type=bind,source="$PWD"/src,target=/src \
+            --mount type=bind,source="$PWD"/tests,target=/tests \
+            cleverfm/transcribe/tests
+
+  run:
+    desc: Run app
+    cmds:
+      - |
+          docker run \
+            --rm \
+            --mount type=bind,source="$PWD"/src,target=/src \
+            cleverfm/transcribe/app
+
+  build:
+    desc: Build all images
+    deps: [build-tests, build-app]
+
+  build-tests:
+    desc: Build tests image
+    cmds:
+      - |
+          docker build \
+            -f tests.Dockerfile \
+            -t cleverfm/transcribe/tests \
+            .
+
+  build-app:
+    desc: Build app image
+    cmds:
+      - |
+          docker build \
+            -f app.Dockerfile \
+            -t cleverfm/transcribe/app \
+            .
+
+  venv:
+    desc: Crates a virtual environment, updates pip and install dev requirements
+    cmds:
+      - python -m venv venv
+      - venv/bin/pip install --upgrade pip
+      - venv/bin/pip install -e .[dev]
