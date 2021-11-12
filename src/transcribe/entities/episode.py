@@ -1,4 +1,6 @@
 from __future__ import annotations
+import itertools
+import math
 import re
 from dataclasses import dataclass
 from datetime import timedelta
@@ -21,14 +23,15 @@ class Episode:
         start = timedelta(seconds=start_time)
         end = timedelta(seconds=end_time)
         matches = []
-        for t in self.transcripts:
-            if t.timestamp < start:
+        for transcript, next_transcript in pairwise(self.transcripts):
+            if transcript.timestamp < start:
                 continue
 
-            if t.timestamp >= end:
+            if not start <= transcript.timestamp < end:
                 break
 
-            matches.append(t.transcript)
+            text = get_transcript(transcript, next_transcript, start, end)
+            matches.append(text)
 
         return " ".join(matches)
 
@@ -36,7 +39,33 @@ class Episode:
     def from_transcript_text(cls, episode_id: str, text: str) -> Episode:
         transcripts = []
         for timestamp, text in TRANSCRIPT_PATTERN.findall(text):
-            t = Transcript.from_dict(dict(timestamp=timestamp, transcript=text))
+            t = Transcript.from_dict(dict(timestamp=timestamp, text=text))
             transcripts.append(t)
 
         return cls(episode_id, transcripts)
+
+
+def pairwise(iterable):
+    """
+    Return successive overlapping pairs taken from the input iterable.
+    https://docs.python.org/3/library/itertools.html
+
+    """
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return itertools.zip_longest(a, b)
+
+
+def get_transcript(
+        t1: Transcript, t2: Transcript, start: timestamp, end:  timestamp
+) -> str:
+    if t2.timestamp <= end:
+        return t1.text
+
+    words = t1.text.split()
+    duration_in_s = (t2.timestamp - t1.timestamp).total_seconds()
+    words_per_second = len(words) / duration_in_s
+    seconds_wanted = (end - t1.timestamp).total_seconds()
+    count = math.ceil(words_per_second * seconds_wanted)
+    match = " ".join(words[:count])
+    return match
