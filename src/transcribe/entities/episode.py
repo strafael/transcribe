@@ -1,6 +1,5 @@
 from __future__ import annotations
 import itertools
-import math
 import re
 from dataclasses import dataclass
 from datetime import timedelta
@@ -22,27 +21,37 @@ class Episode:
     def __hash__(self):
         return hash(self.episode_id)
 
-    def get_segment_transcript(self, start_time, end_time) -> str:
+    def get_segment_transcript(self, start_time: str, end_time: str) -> str:
+        """Get the transcript segment within the specified timestamps.
+
+        Args:
+          start_time: The start time.
+          end_time: The end time.
+
+        Returns:
+          The transcript segment.
+        """
         start = timedelta(seconds=start_time)
         end = timedelta(seconds=end_time)
+        transcripts_in_range = [t for t in self.transcripts if t.is_within(start, end)]
         matches = []
-        for transcript, next_transcript in pairwise(self.transcripts):
-            if transcript.timestamp < start:
-                continue
-
-            if not start <= transcript.timestamp < end:
-                break
-
-            text = get_transcript(transcript, next_transcript, start, end)
-            matches.append(text)
+        for transcript in transcripts_in_range:
+            print(f"{transcript.start}, {transcript.end}")
+            matches.append(transcript.get_segment(start, end))
 
         return " ".join(matches)
 
     @classmethod
     def from_transcript_text(cls, episode_id: str, text: str) -> Episode:
         transcripts = []
-        for timestamp, text in TRANSCRIPT_PATTERN.findall(text):
-            t = Transcript.from_dict(dict(timestamp=timestamp, text=text))
+        for t1, t2 in pairwise(TRANSCRIPT_PATTERN.finditer(text)):
+            start, text = t1.groups()
+            if t2 is None:
+                end = None
+            else:
+                end, _ = t2.groups()
+
+            t = Transcript.from_dict(dict(start=start, end=end, text=text))
             transcripts.append(t)
 
         return cls(episode_id, transcripts)
@@ -57,18 +66,3 @@ def pairwise(iterable):
     a, b = itertools.tee(iterable)
     next(b, None)
     return itertools.zip_longest(a, b)
-
-
-def get_transcript(
-        t1: Transcript, t2: Transcript, start: timestamp, end:  timestamp
-) -> str:
-    if t2.timestamp <= end:
-        return t1.text
-
-    words = t1.text.split()
-    duration_in_s = (t2.timestamp - t1.timestamp).total_seconds()
-    words_per_second = len(words) / duration_in_s
-    seconds_wanted = (end - t1.timestamp).total_seconds()
-    count = math.ceil(words_per_second * seconds_wanted)
-    match = " ".join(words[:count])
-    return match
