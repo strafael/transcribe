@@ -19,6 +19,9 @@ class Episode:
     episode_id: str
     transcripts: List[Transcript]
 
+    def __hash__(self):
+        return hash(self.episode_id)
+
     def get_segment_transcript(self, start_time, end_time) -> str:
         start = timedelta(seconds=start_time)
         end = timedelta(seconds=end_time)

@@ -4,6 +4,7 @@ import pytest
 
 from transcribe.entities import Episode
 from transcribe.interfaces import EpisodeRepositoryInterface
+from transcribe.usecases import RetrieveSegmentTranscript
 
 
 class FakeRepository(EpisodeRepositoryInterface):
